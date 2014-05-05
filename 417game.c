@@ -311,38 +311,44 @@ void help () {
 
 void Arte_ascii() {
 
-    printf("     d8888  d888  8888888888 \n");
-    printf("    d8P888 d8888        d88P \n");
-    printf("   d8P 888   888       d88P  \n");
-    printf("  d8P  888   888      d88P   \n");
-    printf(" d88   888   888   88888888  \n");
-    printf(" 8888888888  888    d88P     \n");
-    printf("      888    888   d88P      \n");
-    printf("      888  888888 d88P       \n");
     printf("\n");
     printf("\n");
 
-    printf("    888    888       d8888   888     888            .d88888b. 8888888888 \n");
-    printf("    888    888      d88888   888     888           d88P   Y88b888        \n");
-    printf("    888    888     d88P888   888     888           888     888888        \n");
-    printf("    8888888888    d88P 888   888     888           888     8888888888    \n");
-    printf("    888    888   d88P  888   888     888           888     888888        \n");
-    printf("    888    888  d88P   888   888     888           888     888888        \n");
-    printf("    888    888 d8888888888   888     888           Y88b. .d88P888        \n");
-    printf("    888    888d88P     888   8888888888888888       Y88888PP  888        \n");
+    printf("=============================================================================\n");
+    printf("\n");
+    printf("                             d8888  d888  8888888888                         \n");
+    printf("          db                d8P888 d8888        d88P            db           \n");
+    printf("          88               d8P 888   888       d88P             88           \n");
+    printf("   b.     88     .d       d8P  888   888      d88P       b.     88     .d    \n");
+    printf("    Yb.   88   .dP       d88   888   888   88888888       Yb.   88   .dP     \n");
+    printf("      Yb. 88 .dP         8888888888  888    d88P            Yb. 88 .dP       \n");
+    printf("        Yb88dP                 888   888   d88P               Yb88dP         \n");
+    printf(" <888888888888888888>          888 888888 d88P         <888888888888888888>  \n");
+    printf("\n");
+    printf("\n");
+
+    printf("     888    888       d8888   888     888            .d88888b. 8888888888   \n");
+    printf("     888    888      d88888   888     888           d88P   Y88b888          \n");
+    printf("     888    888     d88P888   888     888           888     888888          \n");
+    printf("     8888888888    d88P 888   888     888           888     8888888888      \n");
+    printf("     888    888   d88P  888   888     888           888     888888          \n");
+    printf("     888    888  d88P   888   888     888           888     888888          \n");
+    printf("     888    888 d8888888888   888     888           Y88b. .d88P888          \n");
+    printf("     888    888d88P     888   8888888888888888       Y88888PP  888          \n");
 
     printf("\n");
     printf("\n");
 
-    printf("\t    888    888 .d88888b. 8888888b. 8888888b.  .d88888b. 8888888b.       \n");
-    printf("\t    888    888d88P   Y88b888    88b888   Y88bd88P   Y88b888   Y88b      \n");   
-    printf("\t    888    888888     888888    888888    888888     888888    888      \n");
-    printf("\t    8888888888888     888888   d88P888   d88P888     888888   d88P      \n");
-    printf("\t    888    888888     8888888888P  8888888P  888     8888888888P       \n");   
-    printf("\t    888    888888     888888 T88b  888 T88b  888     888888 T88b        \n");
-    printf("\t    888    888Y88b. .d88P888  T88b 888  T88b Y88b. .d88P888  T88b       \n");
-    printf("\t    888    888 Y88888P 88888   T88b888   T888b Y88888P  888   T88b      \n");
-
+    printf("   888    888 .d88888b. 8888888b. 8888888b.  .d88888b. 8888888b.  .d88888b.  \n");
+    printf("   888    888d88P   Y88b888    88b888   Y88bd88P   Y88b888   Y88bd88P   Y88  \n");   
+    printf("   888    888888     888888    888888    888888     888888    888888         \n");
+    printf("   8888888888888     888888   d88P888   d88P888     888888   d88PY88b.       \n");
+    printf("   888    888888     8888888888P  8888888P  888     8888888888P   Y888888b.  \n");   
+    printf("   888    888888     888888 T88b  888 T88b  888     888888 T88b        Y888  \n");
+    printf("   888    888Y88b. .d88P888  T88b 888  T88b Y88b. .d88P888  T88b 88b. .d888  \n");
+    printf("   888    888 Y88888P 88888   T88b888   T888b Y88888P  888   T88bY8888888P   \n");
+    printf("\n");
+    printf("=============================================================================\n");
     printf("\n");
     printf("\n");
 
@@ -382,10 +388,11 @@ int process_input(Map *game)
             break;
 
         case 'a':
-            if (strcmp(game->player->itens[0].proto.description,"baseado") == 0)
+            if (game->player->itens[0].proto.description && strcmp(game->player->itens[0].proto.description,"baseado") == 0)
                 game->_(attack)(game, damage);
-            else
-                printf("voce tem que ter um baseado\n");
+            else {
+                printf("voce tem que ter um baseado\n"); 
+            }
             break;
 
         case 'g':
