@@ -69,7 +69,7 @@ void Player_joint_roll(void *self) {
     printf("\tBolando um baseado\n");
     Player *player = self;
     Item *item = player->itens;
-    strcpy(item[0].proto.description,"Baseadao");
+    strcpy(item[0].proto.description,"baseado");
     strcpy(item[1].proto.description,"");
     strcpy(item[2].proto.description,"");
 }
@@ -110,16 +110,25 @@ int Monster_attack(void *self, int damage)
 {
     Monster *monster = self;
 
-    printf("Você atacou %s!\n", monster->_(description));
+    if (strcmp(monster->_(description),"O insaciavel kchaça") == 0) {
+        
+        
+        printf("Você atacou %s!\n", monster->_(description));
+        monster->hit_points -= damage;
 
-    monster->hit_points -= damage;
+        if(monster->hit_points > 0) {
+            printf("Não esta chapado ainda.\n");
+            return 0;
+        } 
+        else {
+            printf("chapou!\n");
+            return 1;
+        }
+    }
 
-    if(monster->hit_points > 0) {
-        printf("Não esta chapado ainda.\n");
+    else {
+        printf("nao tem como chapar sem baseado!!\n");
         return 0;
-    } else {
-        printf("chapou!\n");
-        return 1;
     }
 }
 
@@ -316,7 +325,10 @@ int process_input(Map *game)
             break;
 
         case 'a':
-            game->_(attack)(game, damage);
+            if (strcmp(game->player->itens[0].proto.description,"baseado") == 0)
+                game->_(attack)(game, damage);
+            else
+                printf("voce tem que ter um baseado\n");
             break;
 
         case 'g':
