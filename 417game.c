@@ -149,7 +149,9 @@ int Room_item(void *self) {
     Room *room = self;
     Item *item = room->item;
     if (item) {
+        printf("Item na sala: ");
         item->_(describe)(item);
+        
         return 1;
     }
     else
@@ -180,7 +182,8 @@ void *Room_move(void *self, Direction direction)
 
     if(next) {
         next->_(describe)(next);
-        Room_item(next);   
+        Room_item(next);
+
  }
 
     return next;
@@ -292,6 +295,60 @@ Object MapProto = {
     .attack = Map_attack
 };
 
+
+void help () { 
+
+    printf("\n");
+    printf("\t Comandos:\n");
+    printf("\t\t l: lista os vizinhos\n");
+    printf("\t\t i: informações do player\n");
+    printf("\t\t k: inventario\n");
+    printf("\t\t g: pega um item da sala\n");
+    printf("\t\t a: ataca!\n");
+    printf("\t\t j: enrola um baseado\n");
+}
+
+
+void Arte_ascii() {
+
+    printf("     d8888  d888  8888888888 \n");
+    printf("    d8P888 d8888        d88P \n");
+    printf("   d8P 888   888       d88P  \n");
+    printf("  d8P  888   888      d88P   \n");
+    printf(" d88   888   888   88888888  \n");
+    printf(" 8888888888  888    d88P     \n");
+    printf("      888    888   d88P      \n");
+    printf("      888  888888 d88P       \n");
+    printf("\n");
+    printf("\n");
+
+    printf("    888    888       d8888   888     888            .d88888b. 8888888888 \n");
+    printf("    888    888      d88888   888     888           d88P   Y88b888        \n");
+    printf("    888    888     d88P888   888     888           888     888888        \n");
+    printf("    8888888888    d88P 888   888     888           888     8888888888    \n");
+    printf("    888    888   d88P  888   888     888           888     888888        \n");
+    printf("    888    888  d88P   888   888     888           888     888888        \n");
+    printf("    888    888 d8888888888   888     888           Y88b. .d88P888        \n");
+    printf("    888    888d88P     888   8888888888888888       Y88888PP  888        \n");
+
+    printf("\n");
+    printf("\n");
+
+    printf("\t    888    888 .d88888b. 8888888b. 8888888b.  .d88888b. 8888888b.       \n");
+    printf("\t    888    888d88P   Y88b888    88b888   Y88bd88P   Y88b888   Y88b      \n");   
+    printf("\t    888    888888     888888    888888    888888     888888    888      \n");
+    printf("\t    8888888888888     888888   d88P888   d88P888     888888   d88P      \n");
+    printf("\t    888    888888     8888888888P  8888888P  888     8888888888P       \n");   
+    printf("\t    888    888888     888888 T88b  888 T88b  888     888888 T88b        \n");
+    printf("\t    888    888Y88b. .d88P888  T88b 888  T88b Y88b. .d88P888  T88b       \n");
+    printf("\t    888    888 Y88888P 88888   T88b888   T888b Y88888P  888   T88b      \n");
+
+    printf("\n");
+    printf("\n");
+
+
+}
+
 int process_input(Map *game)
 {
     
@@ -361,7 +418,9 @@ int process_input(Map *game)
             if(game->location->east) printf("(e)Leste\n");
             if(game->location->west) printf("(w)Oeste\n");
             break;
-
+        case 'h' :
+            help();
+            break;
         default:
             printf("ahhmmm?: %d\n", ch);
     }
@@ -375,6 +434,7 @@ int main(int argc, char *argv[])
 
     Map *game = NEW(Map, "417 hall of horror");
 
+    Arte_ascii();
     printf("Voce entrou no ");
     game->location->_(describe)(game->location);
 
