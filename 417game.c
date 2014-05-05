@@ -5,6 +5,20 @@
 #include <time.h>
 #include "417game.h"
 
+int Item_init(void *self)
+{
+    return 1;
+    
+}
+
+Object ItemProto = {
+   
+    .init = Item_init
+    
+};
+
+
+
 
 int Monster_attack(void *self, int damage)
 {
@@ -35,6 +49,18 @@ Object MonsterProto = {
     .attack = Monster_attack
 };
 
+int Room_item(void *self) {
+
+    Room *room = self;
+    Item *item = room->item;
+    if (item) {
+        printf("sala contem item %s",item->_(description));
+        return 1;
+    }
+    else
+        return 0;
+}
+
 
 void *Room_move(void *self, Direction direction)
 {
@@ -51,7 +77,7 @@ void *Room_move(void *self, Direction direction)
         printf("Você foi rumo ao leste, para\n");
         next = room->east;
     } else if(direction == WEST && room->west) {
-        printf("Você foi rumo ao oest, para\n");
+        printf("Você foi rumo ao oeste, para\n");
         next = room->west;
     } else {
         printf("Não pode ir nessa direção.");
@@ -60,7 +86,8 @@ void *Room_move(void *self, Direction direction)
 
     if(next) {
         next->_(describe)(next);
-    }
+        Room_item(next);   
+ }
 
     return next;
 }
@@ -79,6 +106,7 @@ int Room_attack(void *self, int damage)
         return 0;
     }
 }
+
 
 
 Object RoomProto = {
@@ -115,17 +143,33 @@ int Map_init(void *self)
 {
     Map *map = self;
 
-    // make some rooms for a small map
+    // instancia as salas 
     Room *hall = NEW(Room, "The 417 Hall of Horror");
-    Room *modulo1 = NEW(Room, "Modulo 1, você pegou o dixavador");
     Room *arena = NEW(Room, "The arena, com o kchaça");
-    Room *modulo2 = NEW(Room, "Modulo2, você tem o baseado agora!");
+    Room *modulo1 = NEW(Room, "Modulo 1");
+    Room *modulo2 = NEW(Room, "Modulo2");
+    Room *modulo3 = NEW(Room, "Modulo3");
 
-    // put the bad guy in the arena
+    //instancia os itens
+    Item *dixava = NEW(Item,"o dixavador!!");
+    modulo1->item = dixava;
+
+    Item *seda = NEW(Item,"a seda!!");
+    modulo2->item = seda;
+
+    Item *maconha = NEW(Item,"maconha!!");
+    modulo3->item = maconha;
+    
+    // coloca nosso grande amigo cachaça na cena!
+
     arena->bad_guy = NEW(Monster, "O insaciavel kchaça");
 
-    // setup the map rooms
+    
+    // aponta os endereços das salas
+    hall->west = modulo3;
     hall->north = modulo1;
+
+    modulo3->east = hall;
 
     modulo1->west = arena;
     modulo1->east = modulo2;
@@ -134,7 +178,9 @@ int Map_init(void *self)
     arena->east = modulo1;
     modulo2->west = modulo1;
 
-    // start the map and the character off in the hall
+
+
+    // começa o jogo colocando o personagem no hall
     map->start = hall;
     map->location = hall;
 
@@ -182,6 +228,7 @@ int process_input(Map *game)
 
             game->_(attack)(game, damage);
             break;
+
         case 'l':
             printf("Você pode ir para:\n");
             if(game->location->north) printf("(n)Norte\n");
@@ -199,10 +246,8 @@ int process_input(Map *game)
 
 int main(int argc, char *argv[])
 {
-    // simple way to setup the randomness
     srand(time(NULL));
 
-    // make our map to work with
     Map *game = NEW(Map, "417 hall of horror");
 
     printf("Voce entrou no ");
