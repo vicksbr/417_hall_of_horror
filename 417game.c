@@ -18,8 +18,6 @@ Object ItemProto = {
 };
 
 
-
-
 int Monster_attack(void *self, int damage)
 {
     Monster *monster = self;
@@ -101,7 +99,8 @@ int Room_attack(void *self, int damage)
     if(monster) {
         monster->_(attack)(monster, damage);
         return 1;
-    } else {
+    } 
+    else {
         printf("Você não tem quem atacar, anta.\n");
         return 0;
     }
@@ -195,6 +194,7 @@ Object MapProto = {
 
 int process_input(Map *game)
 {
+    
     printf("\n> ");
 
     char ch = getchar();
@@ -225,10 +225,17 @@ int process_input(Map *game)
             break;
 
         case 'a':
-
             game->_(attack)(game, damage);
             break;
 
+        case 'g':
+            
+            if (game->location->item) {
+                game->location->item->_(describe)(game->location->item);
+                printf("aaaaa\n");
+            }
+            break;
+        
         case 'l':
             printf("Você pode ir para:\n");
             if(game->location->north) printf("(n)Norte\n");
