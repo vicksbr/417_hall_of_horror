@@ -13,6 +13,18 @@ typedef struct Monster Monster;
 int Monster_attack(void *self, int damage);
 int Monster_init(void *self);
 
+//
+
+struct Player {
+
+    Object proto;
+    int hit_points;
+};  
+
+//
+typedef struct Player Player;
+int Player_init(void *self);
+
 
 struct Item {
 
@@ -45,6 +57,7 @@ struct Map {
     Object proto;
     Room *start;
     Room *location;
+    Player *player;
 };
 
 typedef struct Map Map;
@@ -52,12 +65,5 @@ typedef struct Map Map;
 void *Map_move(void *self, Direction direction);
 int Map_attack(void *self, int damage);
 int Map_init(void *self);
-
-
-
-
-
-
-
 
 #endif

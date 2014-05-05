@@ -12,7 +12,7 @@ typedef struct {
     void (*destroy)(void *self);
     void *(*move)(void *self, Direction direction);
     int (*attack)(void *self, int damage);
-    int (*get)(void *self, char *item);
+    
 
 } Object;
 
@@ -21,7 +21,6 @@ void Object_destroy(void *self);
 void Object_describe(void *self);
 void *Object_move(void *self, Direction direction);
 int  Object_attack(void *self, int damage);
-void Object_get(void *self, char *item);
 void *Object_new(size_t size, Object proto, char *description);
 
 #define NEW(T, N) Object_new(sizeof(T), T##Proto, N)

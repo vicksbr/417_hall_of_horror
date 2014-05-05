@@ -5,6 +5,34 @@
 #include <time.h>
 #include "417game.h"
 
+
+
+int Player_init(void *self)
+{
+    Player *player = self;
+    player->hit_points = 10;    
+    return 1;
+    
+}
+
+
+void Player_describe(void *self) {
+
+    Player *player = self;
+    
+    printf("\tNome: %s\n",player->_(description));
+    printf("\tHitpoints: %d\n",player->hit_points);
+}
+
+
+
+Object PlayerProto = { 
+
+    .init = Player_init,
+    .describe = Player_describe
+};
+
+
 int Item_init(void *self)
 {
     return 1;
@@ -52,7 +80,7 @@ int Room_item(void *self) {
     Room *room = self;
     Item *item = room->item;
     if (item) {
-        printf("sala contem item %s",item->_(description));
+        item->_(describe)(item);
         return 1;
     }
     else
@@ -64,7 +92,6 @@ void *Room_move(void *self, Direction direction)
 {
     Room *room = self;
     Room *next = NULL;
-
     if(direction == NORTH && room->north) {
         printf("Você foi rumo ao norte, para:\n");
         next = room->north;
@@ -149,6 +176,11 @@ int Map_init(void *self)
     Room *modulo2 = NEW(Room, "Modulo2");
     Room *modulo3 = NEW(Room, "Modulo3");
 
+    //instancia o player
+
+    Player *player = NEW(Player,"vicks, the Hit-Maker");
+    map->player = player;
+
     //instancia os itens
     Item *dixava = NEW(Item,"o dixavador!!");
     modulo1->item = dixava;
@@ -176,8 +208,6 @@ int Map_init(void *self)
 
     arena->east = modulo1;
     modulo2->west = modulo1;
-
-
 
     // começa o jogo colocando o personagem no hall
     map->start = hall;
@@ -232,8 +262,11 @@ int process_input(Map *game)
             
             if (game->location->item) {
                 game->location->item->_(describe)(game->location->item);
-                printf("aaaaa\n");
             }
+            break;
+        
+        case 'i':
+            game->player->_(describe)(game->player);
             break;
         
         case 'l':

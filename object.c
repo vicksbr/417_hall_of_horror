@@ -53,7 +53,7 @@ void *Object_new(size_t size, Object proto, char *description)
     if(!proto.destroy) proto.destroy = Object_destroy;
     if(!proto.attack) proto.attack = Object_attack;
     if(!proto.move) proto.move = Object_move;
-    if(!proto.get) proto.get = Object_get;
+    //    if(!proto.get) proto.get = Object_get;
     // this seems weird, but we can make a struct of one size,
     // then point a different pointer at it to "cast" it
     Object *el = calloc(1, size);
