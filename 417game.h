@@ -13,19 +13,6 @@ typedef struct Monster Monster;
 int Monster_attack(void *self, int damage);
 int Monster_init(void *self);
 
-//
-
-struct Player {
-
-    Object proto;
-    int hit_points;
-};  
-
-//
-typedef struct Player Player;
-int Player_init(void *self);
-
-
 struct Item {
 
     Object proto;
@@ -34,6 +21,22 @@ struct Item {
 
 typedef struct Item Item;
 int Item_init(void *self);
+
+//
+
+struct Player {
+
+    Object proto;
+    int hit_points;
+    Item *itens;
+    int nitens;
+};  
+
+//
+
+typedef struct Player Player;
+int Player_init(void *self);
+
 
 
 struct Room {

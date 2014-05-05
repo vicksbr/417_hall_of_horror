@@ -22,7 +22,7 @@ void Object_describe(void *self)
 
 int Object_init(void *self)
 {
-    // do nothing really
+    //retorno 1 pra saber se criou o objeto
     return 1;
 }
 
@@ -54,21 +54,22 @@ void *Object_new(size_t size, Object proto, char *description)
     if(!proto.attack) proto.attack = Object_attack;
     if(!proto.move) proto.move = Object_move;
     //    if(!proto.get) proto.get = Object_get;
-    // this seems weird, but we can make a struct of one size,
-    // then point a different pointer at it to "cast" it
+    
+    // truque: faz um calloc e na hora de derreferenciar ele faz um cast automatico!!!
     Object *el = calloc(1, size);
     *el = proto;
 
-    // copy the description over
     el->description = strdup(description);
 
-    // initialize it with whatever init we were given
+    //  verifica se ou a função da classe Object abstrata ou a nova implementada tem como retorno 
+    //  da função init o valor 1
     if(!el->init(el)) {
-        // looks like it didn't initialize properly
+        // se entrar aqui ou é pau de alocação ou a função init esta mal escrita
         el->destroy(el);
         return NULL;
     } else {
-        // all done, we made an object of any type
+        // finalmente criado e inicializando um object  
+        // a função retorna ponteiro pra void mas na verdade é um Object!
         return el;
     }
 }

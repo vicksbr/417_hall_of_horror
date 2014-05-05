@@ -9,8 +9,10 @@
 
 int Player_init(void *self)
 {
+
     Player *player = self;
     player->hit_points = 10;    
+    player->nitens = 0;
     return 1;
     
 }
@@ -24,6 +26,55 @@ void Player_describe(void *self) {
     printf("\tHitpoints: %d\n",player->hit_points);
 }
 
+      
+void Player_get_item(void *mapa) {
+
+
+    Map *map = mapa;
+    Item *item = map->location->item;
+    
+    int i = map->player->nitens;
+    
+    if (item) {
+        map->player->itens[i] = *item;
+        printf("peguei %s\n",map->player->itens[i].proto.description);
+        map->player->nitens++;
+     }
+
+     free(map->location->item);
+     map->location->item = NULL;
+}
+
+int Player_jointValidate(void *self,char *item) { 
+
+    
+    Player *player = self;
+
+    int i;
+
+    for (i = 0; i < player->nitens; i++) {
+
+        if (strcmp(player->itens[i].proto.description,item) == 0) {
+            return 1;
+        }
+
+        
+    }
+    return 0;
+}
+
+
+
+void Player_describe_list(void *self) { 
+
+    Player *player = self;
+
+    int i;
+    for (i=0; i < player->nitens; i++) {
+        printf("\titem[%d]: %s\n",i,player->itens[i].proto.description);
+    }
+
+}
 
 
 Object PlayerProto = { 
@@ -171,7 +222,7 @@ int Map_init(void *self)
 
     // instancia as salas 
     Room *hall = NEW(Room, "The 417 Hall of Horror");
-    Room *arena = NEW(Room, "The arena, com o kchaça");
+    Room *arena = NEW(Room, "Calabouço, com o kchaça");
     Room *modulo1 = NEW(Room, "Modulo 1");
     Room *modulo2 = NEW(Room, "Modulo2");
     Room *modulo3 = NEW(Room, "Modulo3");
@@ -180,15 +231,16 @@ int Map_init(void *self)
 
     Player *player = NEW(Player,"vicks, the Hit-Maker");
     map->player = player;
+    map->player->itens = (Item*)malloc(5*sizeof(Item));
 
     //instancia os itens
-    Item *dixava = NEW(Item,"o dixavador!!");
+    Item *dixava = NEW(Item,"dixavador");
     modulo1->item = dixava;
 
-    Item *seda = NEW(Item,"a seda!!");
+    Item *seda = NEW(Item,"seda");
     modulo2->item = seda;
 
-    Item *maconha = NEW(Item,"maconha!!");
+    Item *maconha = NEW(Item,"maconha");
     modulo3->item = maconha;
     
     // coloca nosso grande amigo cachaça na cena!
@@ -261,14 +313,26 @@ int process_input(Map *game)
         case 'g':
             
             if (game->location->item) {
-                game->location->item->_(describe)(game->location->item);
+                Player_get_item(game);
             }
             break;
         
-        case 'i':
+        case 'i': 
             game->player->_(describe)(game->player);
             break;
         
+        case 'k': 
+            Player_describe_list(game->player);
+            break;
+        
+        case 'j':
+            if (Player_jointValidate(game->player,"seda") && Player_jointValidate(game->player,"maconha") &  Player_jointValidate(game->player,"dixavador"))
+            { 
+                printf("BOLANDO UM BANZA!!!\n");
+            }
+            else
+                printf("voce nao pode bolar um baseado ainda..\n");
+            break;
         case 'l':
             printf("Você pode ir para:\n");
             if(game->location->north) printf("(n)Norte\n");
