@@ -64,6 +64,15 @@ int Player_jointValidate(void *self,char *item) {
 }
 
 
+void Player_joint_roll(void *self) { 
+
+    printf("\tBolando um baseado\n");
+    Player *player = self;
+    Item *item = player->itens;
+    strcpy(item[0].proto.description,"Baseadao");
+    strcpy(item[1].proto.description,"");
+    strcpy(item[2].proto.description,"");
+}
 
 void Player_describe_list(void *self) { 
 
@@ -328,7 +337,7 @@ int process_input(Map *game)
         case 'j':
             if (Player_jointValidate(game->player,"seda") && Player_jointValidate(game->player,"maconha") &  Player_jointValidate(game->player,"dixavador"))
             { 
-                printf("BOLANDO UM BANZA!!!\n");
+                Player_joint_roll(game->player);
             }
             else
                 printf("voce nao pode bolar um baseado ainda..\n");
