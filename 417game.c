@@ -444,6 +444,7 @@ int main(int argc, char *argv[])
     Map *game = NEW(Map, "417 hall of horror");
 
     Arte_ascii();
+    printf("Pressione h <enter> para abrir a ajuda\n\n");
     printf("Voce entrou no ");
     game->location->_(describe)(game->location);
 
