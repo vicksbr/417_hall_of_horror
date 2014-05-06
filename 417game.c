@@ -387,19 +387,21 @@ int process_input(Map *game)
             game->_(move)(game, WEST);
             break;
 
-        case 'a':
-            if (game->player->itens[0].proto.description && strcmp(game->player->itens[0].proto.description,"baseado") == 0)
+        case 'a': ; //xipação
+            if (!Player_jointValidate(game->player,"baseado") && strcmp(game->location->proto.description,"Calabouço, com o kchaça") == 0)  
+                printf("Kchaça: não aceito falar com você sem o baseado");
+            else
                 game->_(attack)(game, damage);
-            else {
-                printf("voce tem que ter um baseado\n"); 
-            }
-            break;
+
+             break;
 
         case 'g':
             
             if (game->location->item) {
                 Player_get_item(game);
             }
+            else
+                printf("nao tem nada aqui!!\n");
             break;
         
         case 'i': 
