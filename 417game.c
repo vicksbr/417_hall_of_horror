@@ -515,9 +515,6 @@ int main(int argc, char *argv[])
     printf("Voce entrou no ");
     game->location->_(describe)(game->location);
 
-    Item *baseado_cheat = NEW(Item,"baseado");
-    Player_add_item(game->player,baseado_cheat);
-
     while(process_input(game)) {
     }
 
