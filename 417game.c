@@ -17,7 +17,6 @@ int Player_init(void *self)
     
 }
 
-
 void Player_describe(void *self) {
 
     Player *player = self;
@@ -26,27 +25,36 @@ void Player_describe(void *self) {
     printf("\tHitpoints: %d\n",player->hit_points);
 }
 
-      
+void Player_add_item(void *self,void *item_self) { 
+
+    Player *player = self;
+    Item *item = item_self;
+
+    int i = player->nitens;    
+
+    if (item) {
+
+        player->itens[i] = *item;
+        printf("peguei %s\n",player->itens[i].proto.description);
+        player->nitens++;
+    
+    }
+}
+
 void Player_get_item(void *mapa) {
 
 
     Map *map = mapa;
     Item *item = map->location->item;
     
-    int i = map->player->nitens;
-    
-    if (item) {
-        map->player->itens[i] = *item;
-        printf("peguei %s\n",map->player->itens[i].proto.description);
-        map->player->nitens++;
-     }
+     Player_add_item(map->player,item);
 
      free(map->location->item);
      map->location->item = NULL;
 }
 
-int Player_jointValidate(void *self,char *item) { 
 
+int Player_itemValidate(void *self,char *item) { 
     
     Player *player = self;
 
@@ -108,7 +116,11 @@ Object ItemProto = {
 
 int Monster_attack(void *self, int damage)
 {
-    Monster *monster = self;
+    Map *map = self;
+    Room *room = map->location;
+    Player *player = map->player;
+    Monster *monster = room->bad_guy;
+    Item *item = monster->item;
 
     if (strcmp(monster->_(description),"O insaciavel kchaça") == 0) {
         
@@ -120,12 +132,19 @@ int Monster_attack(void *self, int damage)
             printf("Não esta chapado ainda.\n");
             return 0;
         } 
-        else {
-            printf("chapou!\n");
+        else if (monster->hit_points <= 0 && monster->status == 0) {
+            printf("Não acredito veeaaaks, chapei!!!\n");
+            monster->status = 1;
+            Player_add_item(player,item);
             return 1;
         }
-    }
+        else {
 
+            printf("to chapado!!\n");
+            return 0;
+        }
+
+    }
     else {
         printf("nao tem como chapar sem baseado!!\n");
         return 0;
@@ -136,6 +155,7 @@ int Monster_init(void *self)
 {
     Monster *monster = self;
     monster->hit_points = 10;
+    monster->status = 0;
     return 1;
 }
 
@@ -161,21 +181,36 @@ int Room_item(void *self) {
 
 void *Room_move(void *self, Direction direction)
 {
-    Room *room = self;
+    Map *map = self;
+    Room *room = map->location;
     Room *next = NULL;
+
+    
     if(direction == NORTH && room->north) {
-        printf("Você foi rumo ao norte, para:\n");
         next = room->north;
     } else if(direction == SOUTH && room->south) {
-        printf("Você foi rumo ao sul, para\n");
         next = room->south;
     } else if(direction == EAST && room->east) {
-        printf("Você foi rumo ao leste, para\n");
         next = room->east;
     } else if(direction == WEST && room->west) {
-        printf("Você foi rumo ao oeste, para\n");
         next = room->west;
-    } else {
+    } 
+
+    if (next && next->lock == 1) { 
+        if (Room_open(map,next) == 1) {
+            printf("Abrindo porta\n");
+            printf("você foi em direção a(o):");
+        }
+        else {
+            printf("Você precisa de uma chave!!!\n");
+            next=NULL;
+            
+        }
+    }
+    else if (next && next->lock == 0) {
+        printf("você foi em direção a(o):");
+    }
+    else  {
         printf("Não pode ir nessa direção.");
         next = NULL;
     }
@@ -192,11 +227,13 @@ void *Room_move(void *self, Direction direction)
 
 int Room_attack(void *self, int damage)
 {
-    Room *room = self;
+    Map *map = self;
+    
+    Room *room = map->location;
     Monster *monster = room->bad_guy;
 
     if(monster) {
-        monster->_(attack)(monster, damage);
+        monster->_(attack)(map, damage);
         return 1;
     } 
     else {
@@ -205,6 +242,28 @@ int Room_attack(void *self, int damage)
     }
 }
 
+
+int Room_init(void *self) {
+
+    Room *room = self;
+    room->lock = 0; //nao inicia trancada
+    room->visitada = 0; //nao inicia visitada
+    return 1;
+}
+
+
+int Room_open(void *self,void *self2) { 
+
+    Map *map = self;
+    Room *room = self2;
+    Player *player = map->player;
+    if (strcmp(room->_(description),"Quintal") == 0 && Player_itemValidate(map->player,"chave")) {
+        room->lock = 0;    
+        return 1;
+    }
+
+    return 0;
+}
 
 
 Object RoomProto = {
@@ -219,7 +278,7 @@ void *Map_move(void *self, Direction direction)
     Room *location = map->location;
     Room *next = NULL;
 
-    next = location->_(move)(location, direction);
+    next = location->_(move)(map, direction);
 
     if(next) {
         map->location = next;
@@ -233,9 +292,9 @@ int Map_attack(void *self, int damage)
     Map* map = self;
     Room *location = map->location;
 
-    return location->_(attack)(location, damage);
-}
+    return location->_(attack)(map, damage);
 
+}
 
 int Map_init(void *self)
 {
@@ -247,6 +306,8 @@ int Map_init(void *self)
     Room *modulo1 = NEW(Room, "Modulo 1");
     Room *modulo2 = NEW(Room, "Modulo2");
     Room *modulo3 = NEW(Room, "Modulo3");
+
+    Room *quintal = NEW(Room, "Quintal");
 
     //instancia o player
 
@@ -267,6 +328,8 @@ int Map_init(void *self)
     // coloca nosso grande amigo cachaça na cena!
 
     arena->bad_guy = NEW(Monster, "O insaciavel kchaça");
+    Item *chave = NEW(Item,"chave");
+    arena->bad_guy->item = chave;
 
     
     // aponta os endereços das salas
@@ -279,9 +342,14 @@ int Map_init(void *self)
     modulo1->east = modulo2;
     modulo1->south = hall;
 
+
     arena->east = modulo1;
+    arena->south = quintal;
+    
     modulo2->west = modulo1;
 
+    quintal->north = arena;
+    quintal->lock = 1;
     // começa o jogo colocando o personagem no hall
     map->start = hall;
     map->location = hall;
@@ -351,8 +419,6 @@ void Arte_ascii() {
     printf("=============================================================================\n");
     printf("\n");
     printf("\n");
-
-
 }
 
 int process_input(Map *game)
@@ -366,7 +432,7 @@ int process_input(Map *game)
     int damage = rand() % 4;
 
     switch(ch) {
-        case 45:
+        case -1:
             printf("GG WP.\n");
             return 0;
             break;
@@ -387,8 +453,8 @@ int process_input(Map *game)
             game->_(move)(game, WEST);
             break;
 
-        case 'a': ; //xipação
-            if (!Player_jointValidate(game->player,"baseado") && strcmp(game->location->proto.description,"Calabouço, com o kchaça") == 0)  
+        case 'a': ; 
+            if (!Player_itemValidate(game->player,"baseado") && strcmp(game->location->proto.description,"Calabouço, com o kchaça") == 0)  
                 printf("Kchaça: não aceito falar com você sem o baseado");
             else
                 game->_(attack)(game, damage);
@@ -410,10 +476,10 @@ int process_input(Map *game)
         
         case 'k': 
             Player_describe_list(game->player);
-            break;
+           break;
         
         case 'j':
-            if (Player_jointValidate(game->player,"seda") && Player_jointValidate(game->player,"maconha") &  Player_jointValidate(game->player,"dixavador"))
+            if (Player_itemValidate(game->player,"seda") && Player_itemValidate(game->player,"maconha") &  Player_itemValidate(game->player,"dixavador"))
             { 
                 Player_joint_roll(game->player);
             }
@@ -431,7 +497,8 @@ int process_input(Map *game)
             help();
             break;
         default:
-            printf("ahhmmm?: %d\n", ch);
+            printf("Comando invalido: %d\n", ch);
+            break;
     }
 
     return 1;
@@ -447,6 +514,9 @@ int main(int argc, char *argv[])
     printf("Pressione h <enter> para abrir a ajuda\n\n");
     printf("Voce entrou no ");
     game->location->_(describe)(game->location);
+
+    Item *baseado_cheat = NEW(Item,"baseado");
+    Player_add_item(game->player,baseado_cheat);
 
     while(process_input(game)) {
     }
