@@ -22,7 +22,7 @@ void primeira_visita(char *sala) {
         printf("Um lugar agradavel p/ se bolar um");
 
     if (strcmp(sala,"Modulo 2") == 0)
-        printf("Sala de loucuras!");
+        printf("Sala de muitas loucuras!");
     
 }
 
