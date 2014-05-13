@@ -4,41 +4,81 @@
 #include <string.h>
 #include <time.h>
 #include "417game.h"
+#include "src/lcthw/dbg.h"
+#include "src/lcthw/list.h"
 
 #define cor_verde "\033[32m"
+
+
+void primeira_visita(char *sala) {
+
+    if (strcmp(sala,"Quintal") == 0)
+        printf("Nossa, veaks, ta sol aqui fora");
+
+    if (strcmp(sala,"Calabouço, com o kchaça") == 0)
+        printf("Esse lugar frio e muito louco é o habitat de Kchaça, o insaciavel");
+
+    if (strcmp(sala,"Modulo 1") == 0)
+        printf("Um lugar agradavel p/ se bolar um");
+}
 
 
 int Player_init(void *self)
 {
 
     Player *player = self;
-    player->hit_points = 10;    
+    player->hit_points = 10;
     player->nitens = 0;
+    player->itemAtual = NULL;
     return 1;
-    
+
 }
 
 void Player_describe(void *self) {
 
     Player *player = self;
-    
+
     printf("\tNome: %s\n",player->_(description));
     printf("\tHitpoints: %d\n",player->hit_points);
 }
 
-void Player_add_item(void *self,void *item_self) { 
+
+int Player_equip_item(void *self,void *selfItem) {
+
+    Player *player = self;
+    player->itemAtual = selfItem;
+    return 1;
+}
+
+void Player_remove_item(void *self,char *descricao) {
+
+    Player *player = self;
+
+    int i;
+
+    for(i = 0; i < player->nitens; i++) {
+
+        if (strcmp(player->itens[i].proto.description,descricao) == 0)
+
+            free(&player->itens[i]);
+
+    }
+}
+
+
+void Player_add_item(void *self,void *item_self) {
 
     Player *player = self;
     Item *item = item_self;
 
-    int i = player->nitens;    
+    int i = player->nitens;
 
     if (item) {
 
         player->itens[i] = *item;
         printf("peguei %s\n",player->itens[i].proto.description);
         player->nitens++;
-    
+
     }
 }
 
@@ -47,16 +87,16 @@ void Player_get_item(void *mapa) {
 
     Map *map = mapa;
     Item *item = map->location->item;
-    
+
      Player_add_item(map->player,item);
 
      free(map->location->item);
-     map->location->item = NULL;
+    map->location->item = NULL;
 }
 
 
-int Player_itemValidate(void *self,char *item) { 
-    
+int Player_itemValidate(void *self,char *item) {
+
     Player *player = self;
 
     int i;
@@ -67,13 +107,13 @@ int Player_itemValidate(void *self,char *item) {
             return 1;
         }
 
-        
+
     }
     return 0;
 }
 
 
-void Player_joint_roll(void *self) { 
+void Player_joint_roll(void *self) {
 
     printf("\tBolando um baseado\n");
     Player *player = self;
@@ -83,7 +123,7 @@ void Player_joint_roll(void *self) {
     strcpy(item[2].proto.description,"");
 }
 
-void Player_describe_list(void *self) { 
+void Player_describe_list(void *self) {
 
     Player *player = self;
 
@@ -95,7 +135,7 @@ void Player_describe_list(void *self) {
 }
 
 
-Object PlayerProto = { 
+Object PlayerProto = {
 
     .init = Player_init,
     .describe = Player_describe
@@ -105,13 +145,13 @@ Object PlayerProto = {
 int Item_init(void *self)
 {
     return 1;
-    
+
 }
 
 Object ItemProto = {
-   
+
     .init = Item_init
-    
+
 };
 
 
@@ -124,15 +164,15 @@ int Monster_attack(void *self, int damage)
     Item *item = monster->item;
 
     if (strcmp(monster->_(description),"O insaciavel kchaça") == 0) {
-        
-        
+
+
         printf("Você atacou %s!\n", monster->_(description));
         monster->hit_points -= damage;
 
         if(monster->hit_points > 0) {
             printf("Não esta chapado ainda.\n");
             return 0;
-        } 
+        }
         else if (monster->hit_points <= 0 && monster->status == 0) {
             printf("Não acredito veeaaaks, chapei!!!\n");
             monster->status = 1;
@@ -172,7 +212,7 @@ int Room_item(void *self) {
     if (item) {
         printf("Item na sala: ");
         item->_(describe)(item);
-        
+
         return 1;
     }
     else
@@ -186,7 +226,7 @@ void *Room_move(void *self, Direction direction)
     Room *room = map->location;
     Room *next = NULL;
 
-    
+
     if(direction == NORTH && room->north) {
         next = room->north;
     } else if(direction == SOUTH && room->south) {
@@ -195,9 +235,9 @@ void *Room_move(void *self, Direction direction)
         next = room->east;
     } else if(direction == WEST && room->west) {
         next = room->west;
-    } 
+    }
 
-    if (next && next->lock == 1) { 
+    if (next && next->lock == 1) {
         if (Room_open(map,next) == 1) {
             printf("Abrindo porta\n");
             printf("você foi em direção a(o):");
@@ -205,7 +245,7 @@ void *Room_move(void *self, Direction direction)
         else {
             printf("Você precisa de uma chave!!!\n");
             next=NULL;
-            
+
         }
     }
     else if (next && next->lock == 0) {
@@ -220,7 +260,17 @@ void *Room_move(void *self, Direction direction)
         next->_(describe)(next);
         Room_item(next);
 
- }
+    }
+
+    if (next->visitada == 0) {
+
+        //printf("sua primeira vez aqui? xD");
+        primeira_visita(next->_(description));
+
+        next->visitada = 1;
+
+    }
+
 
     return next;
 }
@@ -229,14 +279,14 @@ void *Room_move(void *self, Direction direction)
 int Room_attack(void *self, int damage)
 {
     Map *map = self;
-    
+
     Room *room = map->location;
     Monster *monster = room->bad_guy;
 
     if(monster) {
         monster->_(attack)(map, damage);
         return 1;
-    } 
+    }
     else {
         printf("Você não tem quem atacar, anta.\n");
         return 0;
@@ -253,13 +303,13 @@ int Room_init(void *self) {
 }
 
 
-int Room_open(void *self,void *self2) { 
+int Room_open(void *self,void *self2) {
 
     Map *map = self;
     Room *room = self2;
     Player *player = map->player;
-    if (strcmp(room->_(description),"Quintal") == 0 && Player_itemValidate(map->player,"chave")) {
-        room->lock = 0;    
+    if (strcmp(room->_(description),"Quintal") == 0 && Player_itemValidate(player,"chave")) {
+        room->lock = 0;
         return 1;
     }
 
@@ -301,7 +351,7 @@ int Map_init(void *self)
 {
     Map *map = self;
 
-    // instancia as salas 
+    // instancia as salas
     Room *hall = NEW(Room, "The 417 Hall of Horror");
     Room *arena = NEW(Room, "Calabouço, com o kchaça");
     Room *modulo1 = NEW(Room, "Modulo 1");
@@ -325,14 +375,14 @@ int Map_init(void *self)
 
     Item *maconha = NEW(Item,"maconha");
     modulo3->item = maconha;
-    
+
     // coloca nosso grande amigo cachaça na cena!
 
     arena->bad_guy = NEW(Monster, "O insaciavel kchaça");
     Item *chave = NEW(Item,"chave");
     arena->bad_guy->item = chave;
 
-    
+
     // aponta os endereços das salas
     hall->west = modulo3;
     hall->north = modulo1;
@@ -346,7 +396,7 @@ int Map_init(void *self)
 
     arena->east = modulo1;
     arena->south = quintal;
-    
+
     modulo2->west = modulo1;
 
     quintal->north = arena;
@@ -355,6 +405,11 @@ int Map_init(void *self)
     map->start = hall;
     map->location = hall;
 
+    //Testes
+    Item *banza = NEW(Item,"baseado");
+    Player_add_item(map->player,chave);
+    Player_add_item(map->player,banza );
+    Player_remove_item(map->player,"chave");
     return 1;
 }
 
@@ -365,7 +420,7 @@ Object MapProto = {
 };
 
 
-void help () { 
+void help () {
 
     printf("\n");
     printf("\t Comandos:\n");
@@ -405,10 +460,10 @@ void Arte_ascii() {
     printf(" 888:.  888d88P..   888.  8888888888888888::.    Y88888PP..888:.       \n");
     printf("                       ..        :.      .:::  \n");
     printf("     888    888 .d88888b::8888888b:.8888888b::..d88888b. 8888888b.  .d88888b  \e[0m\n");
-    printf("     888    888d88P  :Y88b888    88b888   Y88bd88P   Y88b888   Y88bd88   Y88  \e[0m\n");   
+    printf("     888    888d88P  :Y88b888    88b888   Y88bd88P   Y88b888   Y88bd88   Y88  \e[0m\n");
     printf("     888    888888     888888   .888888  .:888888     888888    888888        \e[0m\n");
     printf("     8888888888888   : 888888..:d88P888:::d88P888     888888   d88PY88.       \e[0m\n");
-    printf("     888    888888:.:::8888888888P  8888888P  888     8888888888P   Y888888b  \e[0m\n");   
+    printf("     888    888888:.:::8888888888P  8888888P  888     8888888888P   Y888888b  \e[0m\n");
     printf("     888    888888:::::888888:T88b  888 T88b  888     888888 T88b        Y88  \e[0m\n");
     printf("     888    888Y88b:::d88P888. T88b 888  T88b Y88b. .d88P888  T88b 88b. .d88  \e[0m\n");
     printf("     888    888 Y88888P 88888::.T88b888   T888b Y88888P  888   T88bY8888888P  \e[0m\n");
@@ -420,7 +475,7 @@ void Arte_ascii() {
 
 int process_input(Map *game)
 {
-    
+
     printf("\n> ");
 
     char ch = getchar();
@@ -450,8 +505,8 @@ int process_input(Map *game)
             game->_(move)(game, WEST);
             break;
 
-        case 'a': ; 
-            if (!Player_itemValidate(game->player,"baseado") && strcmp(game->location->proto.description,"Calabouço, com o kchaça") == 0)  
+        case 'a': ;
+            if (!Player_itemValidate(game->player,"baseado") && strcmp(game->location->proto.description,"Calabouço, com o kchaça") == 0)
                 printf("Kchaça: não aceito falar com você sem o baseado");
             else
                 game->_(attack)(game, damage);
@@ -459,25 +514,25 @@ int process_input(Map *game)
              break;
 
         case 'g':
-            
+
             if (game->location->item) {
                 Player_get_item(game);
             }
             else
                 printf("nao tem nada aqui!!\n");
             break;
-        
-        case 'i': 
+
+        case 'i':
             game->player->_(describe)(game->player);
             break;
-        
-        case 'k': 
+
+        case 'k':
             Player_describe_list(game->player);
            break;
-        
+
         case 'j':
             if (Player_itemValidate(game->player,"seda") && Player_itemValidate(game->player,"maconha") &  Player_itemValidate(game->player,"dixavador"))
-            { 
+            {
                 Player_joint_roll(game->player);
             }
             else

@@ -28,18 +28,15 @@ int Monster_init(void *self);
 
 
 
-
-//
-
 struct Player {
 
     Object proto;
     int hit_points;
     Item *itens;
     int nitens;
+    Item *itemAtual;
 };  
 
-//
 
 typedef struct Player Player;
 int Player_init(void *self);
