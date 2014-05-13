@@ -407,8 +407,10 @@ int Map_init(void *self)
 
     //Testes
     Item *banza = NEW(Item,"baseado");
+ 
     Player_add_item(map->player,chave);
     Player_add_item(map->player,banza );
+
     return 1;
 }
 
