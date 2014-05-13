@@ -409,7 +409,6 @@ int Map_init(void *self)
     Item *banza = NEW(Item,"baseado");
     Player_add_item(map->player,chave);
     Player_add_item(map->player,banza );
-    Player_remove_item(map->player,"chave");
     return 1;
 }
 
