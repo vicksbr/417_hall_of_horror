@@ -61,7 +61,7 @@ void Player_remove_item(void *self,char *descricao) {
         if (strcmp(player->itens[i].proto.description,descricao) == 0)
 
             free(&player->itens[i]);
-
+      
     }
 }
 
