@@ -20,6 +20,10 @@ void primeira_visita(char *sala) {
 
     if (strcmp(sala,"Modulo 1") == 0)
         printf("Um lugar agradavel p/ se bolar um");
+
+    if (strcmp(sala,"Modulo 2") == 0)
+        printf("Sala de loucuras!");
+    
 }
 
 
