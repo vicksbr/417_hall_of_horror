@@ -481,6 +481,8 @@ int process_input(Map *game)
     printf("\n> ");
 
     char ch = getchar();
+    if (ch == '\n')
+	    return 1;
     getchar(); // eat ENTER
 
     int damage = rand() % 4;
@@ -550,7 +552,10 @@ int process_input(Map *game)
         case 'h' :
             help();
             break;
-        default:
+	case '\n':         
+	    printf(">");
+	    break;	
+	default:
             printf("Comando invalido: %d\n", ch);
             break;
     }
