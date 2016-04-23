@@ -237,7 +237,11 @@ void *Room_move(void *self, Direction direction)
         next = room->east;
     } else if(direction == WEST && room->west) {
         next = room->west;
-    }
+    } else  {
+        printf("Não pode ir nessa direção.");
+        next = NULL;
+    	return next;
+    }    
 
     if (next && next->lock == 1) {
         if (Room_open(map,next) == 1) {
@@ -253,27 +257,19 @@ void *Room_move(void *self, Direction direction)
     else if (next && next->lock == 0) {
         printf("você foi em direção a(o):");
     }
-    else  {
-        printf("Não pode ir nessa direção.");
-        next = NULL;
-    }
-
+    
     if(next) {
         next->_(describe)(next);
         Room_item(next);
 
     }
-
     if (next->visitada == 0) {
 
         //printf("sua primeira vez aqui? xD");
         primeira_visita(next->_(description));
 
         next->visitada = 1;
-
     }
-
-
     return next;
 }
 
@@ -359,7 +355,6 @@ int Map_init(void *self)
     Room *modulo1 = NEW(Room, "Modulo 1");
     Room *modulo2 = NEW(Room, "Modulo2");
     Room *modulo3 = NEW(Room, "Modulo3");
-
     Room *quintal = NEW(Room, "Quintal");
 
     //instancia o player
@@ -384,11 +379,10 @@ int Map_init(void *self)
     Item *chave = NEW(Item,"chave");
     arena->bad_guy->item = chave;
 
-
     // aponta os endereços das salas
     hall->west = modulo3;
     hall->north = modulo1;
-
+    
     modulo3->east = hall;
 
     modulo1->west = arena;
@@ -403,6 +397,7 @@ int Map_init(void *self)
 
     quintal->north = arena;
     quintal->lock = 1;
+
     // começa o jogo colocando o personagem no hall
     map->start = hall;
     map->location = hall;
@@ -415,6 +410,10 @@ int Map_init(void *self)
 
     return 1;
 }
+
+
+
+
 
 Object MapProto = {
     .init = Map_init,

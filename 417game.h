@@ -10,11 +10,11 @@ struct Item {
 };
 
 typedef struct Item Item;
+
 int Item_init(void *self);
 
 struct Monster {
     Object proto;
-
     int hit_points;
     int status; 
     Item *item;
@@ -29,7 +29,6 @@ int Monster_init(void *self);
 
 
 struct Player {
-
     Object proto;
     int hit_points;
     Item *itens;
