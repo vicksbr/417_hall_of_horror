@@ -4,8 +4,6 @@
 #include <string.h>
 #include <time.h>
 #include "417game.h"
-#include "src/lcthw/dbg.h"
-#include "src/lcthw/list.h"
 
 #define cor_verde "\033[32m"
 
@@ -292,7 +290,7 @@ int Room_attack(void *self, int damage)
         return 1;
     }
     else {
-        printf("Você não tem quem atacar, anta.\n");
+        printf("Você não tem quem atacar, amigão.\n");
         return 0;
     }
 }
@@ -410,10 +408,10 @@ int Map_init(void *self)
     map->location = hall;
 
     //Testes
-    Item *banza = NEW(Item,"baseado");
+    //Item *banza = NEW(Item,"baseado");
  
-    Player_add_item(map->player,chave);
-    Player_add_item(map->player,banza );
+    //Player_add_item(map->player,chave);
+    //Player_add_item(map->player,banza );
 
     return 1;
 }
