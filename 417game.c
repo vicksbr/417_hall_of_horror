@@ -13,7 +13,7 @@
 	    if (strcmp(sala,"Quintal") == 0)
 		printf("Nossa, veaks, ta sol aqui fora");
 
-	    if (strcmp(sala,"Calabouço, com o kchaça") == 0)
+	    if (strcmp(sala,"Calabouço") == 0)
 		printf("Esse lugar frio e muito louco é o habitat de Kchaça, o insaciavel");
 
 	    if (strcmp(sala,"Modulo 1") == 0)
@@ -349,7 +349,7 @@
 
 	    // instancia as salas
 	    Room *hall = NEW(Room, "The 417 Hall");
-	    Room *arena = NEW(Room, "Calabouco");
+	    Room *arena = NEW(Room, "Calabouço");
 	    Room *modulo1 = NEW(Room, "Modulo 1");
 	    Room *modulo2 = NEW(Room, "Modulo2");
 	    Room *modulo3 = NEW(Room, "Modulo3");
@@ -555,7 +555,7 @@ int process_input(Map *game)
             break;
 
         case 'a': ;
-            if (!Player_itemValidate(game->player,"baseado") && strcmp(game->location->proto.description,"Calabouço, com o kchaça") == 0)
+            if (!Player_itemValidate(game->player,"baseado") && strcmp(game->location->proto.description,"Calabouço") == 0)
                 printf("Kchaça: não aceito falar com você sem o baseado");
             else
                 game->_(attack)(game, damage);

@@ -1,5 +1,5 @@
 #ifndef _object_h
-#define _object_h
+#define object_h
 
 typedef enum {
     NORTH, SOUTH, EAST, WEST
