@@ -37,9 +37,7 @@ int Player_init(void *self)
 }
 
 void Player_describe(void *self) {
-
     Player *player = self;
-
     printf("\tNome: %s\n",player->_(description));
     printf("\tHitpoints: %d\n",player->hit_points);
 }
@@ -350,8 +348,8 @@ int Map_init(void *self)
     Map *map = self;
 
     // instancia as salas
-    Room *hall = NEW(Room, "The 417 Hall of Horror");
-    Room *arena = NEW(Room, "Calabouço, com o kchaça");
+    Room *hall = NEW(Room, "The 417 Hall");
+    Room *arena = NEW(Room, "Calabouço");
     Room *modulo1 = NEW(Room, "Modulo 1");
     Room *modulo2 = NEW(Room, "Modulo2");
     Room *modulo3 = NEW(Room, "Modulo3");
@@ -411,7 +409,53 @@ int Map_init(void *self)
     return 1;
 }
 
+void Map_graph(void *self) { 
 
+    Map *map = self;	
+    printf("\n");
+    printf("\n");    
+    printf("\n");    
+    if (map->location->north) {
+    	printf("               ");
+    	printf("%s\n",map->location->north->proto.description);
+    	printf("                  |                  \n");
+    	printf("                  |                  \n");
+    	printf("                  |                  \n");
+    }
+    else {    	
+    	printf("               não tem\n");
+    	printf("                  |                  \n");
+    	printf("                  |                  \n");
+    	printf("                  |                  \n");
+    }
+    if (map->location->west) {	     
+    	 printf("%s",map->location->west->proto.description);    	 
+    	 printf("———————");     
+    }
+    else {
+    	printf("——————não tem\n");
+    }
+    printf("%s",map->location->proto.description);            
+    
+    if (map->location->east) { 	
+		printf("——————");
+	    map->location->_(describe)(map->location->east);    
+    }
+    else {
+    	printf("——————não tem");
+    }
+    printf("                  |                  \n");
+    printf("                  |                  \n");
+    printf("                  |                  \n");    
+    if (map->location->south) {	    
+	    printf("               ");
+	    printf("%s",map->location->south->proto.description);    	 
+    	printf("               \n");
+    }
+    else {
+    	printf("               não tem               \n");
+    }
+}
 
 
 
@@ -483,7 +527,7 @@ int process_input(Map *game)
     char ch = getchar();
     if (ch == '\n')
 	    return 1;
-    getchar(); // eat ENTER
+    getchar(); 
 
     int damage = rand() % 4;
 
@@ -552,6 +596,9 @@ int process_input(Map *game)
         case 'h' :
             help();
             break;
+	case 'm':
+	    Map_graph(game);
+	    break;
 	case '\n':         
 	    printf(">");
 	    break;	
