@@ -471,6 +471,7 @@ void help () {
     printf("\n");
     printf("\t Comandos:\n");
     printf("\t\t l: lista os vizinhos\n");
+    printf("\t\t m: mapa dos vizinhos\n");
     printf("\t\t i: informações do player\n");
     printf("\t\t k: inventario\n");
     printf("\t\t g: pega um item da sala\n");
@@ -606,7 +607,6 @@ int process_input(Map *game)
             printf("Comando invalido: %d\n", ch);
             break;
     }
-
     return 1;
 }
 
