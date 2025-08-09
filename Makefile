@@ -1,8 +1,14 @@
 CFLAGS=-Wall -g
 
-all: 417game
+CC=gcc
+SOURCES=417game.c object.c
+EXECUTABLE=417hallofhorror
 
-417game: object.o
+linux: $(SOURCES)
+	$(CC) -o $(EXECUTABLE) $(SOURCES)
 
-clean: 	
-	rm -f 417game object.o
+windows: $(SOURCES)
+	x86_64-w64-mingw32-gcc -o $(EXECUTABLE).exe $(SOURCES)
+
+clean:
+	rm -f *.o $(EXECUTABLE) $(EXECUTABLE).exe
